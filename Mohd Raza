@@ -28,7 +28,8 @@
 
     .header-right{display:flex;align-items:center;gap:16px}
     .toggle-buttons{display:flex;gap:8px}
-    .btn{background:var(--accent);border:none;color:#000;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:600}
+    .btn{background:var(--accent);border:none;color:#000;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:600;transition:opacity 0.3s}
+    .btn:hover{opacity:0.85}
 
     .clock-wrap{width:84px;height:84px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:var(--card);border:1px solid rgba(0,0,0,0.08)}
     .visitor-wrap{min-width:170px;padding:10px 14px;border-radius:10px;background:var(--card);border:1px solid rgba(0,0,0,0.06);display:flex;flex-direction:column;align-items:flex-start;gap:6px}
@@ -55,8 +56,6 @@
     .review-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
     .review{background:var(--card);padding:18px;border-radius:12px;border:1px solid rgba(0,0,0,0.06)}
     .review h4{margin:0;color:var(--accent)}
-    .review .flag{font-size:24px;margin-right:8px}
-    .review .rating{color:var(--accent);margin-top:6px}
     .review p{margin-top:8px;font-size:0.95rem;opacity:0.9}
 
     .section{max-width:1000px;margin:48px auto;padding:0 20px}
@@ -116,22 +115,7 @@
       <div class="review"><h4>🇮🇳 Priya - India</h4><p>"Outstanding Android app! Smooth performance and beautiful UI. Highly recommend."</p><div class="rating">★★★★★</div></div>
       <div class="review"><h4>🇬🇧 Oliver - London</h4><p>"The website Raza built for us is top-notch and fully responsive. Great attention to detail!"</p><div class="rating">★★★★★</div></div>
       <div class="review"><h4>🇫🇷 Emma - France</h4><p>"Loved the AI-based recommendation system he created for my store. Very talented developer!"</p><div class="rating">★★★★★</div></div>
-      <div class="review"><h4>🇩🇪 Lukas - Germany</h4><p>"Incredible website speed optimization and modern design. Thank you Raza!"</p><div class="rating">★★★★★</div></div>
       <div class="review"><h4>🇨🇦 Sophia - Canada</h4><p>"Delivered my eCommerce app on time with zero bugs. Excellent work ethics."</p><div class="rating">★★★★★</div></div>
-      <div class="review"><h4>🇯🇵 Kenji - Japan</h4><p>"The AI automation tools Raza created have saved us hundreds of hours monthly!"</p><div class="rating">★★★★★</div></div>
-      <div class="review"><h4>🇦🇺 Mia - Australia</h4><p>"Best Android developer I’ve ever worked with. Creative and reliable."</p><div class="rating">★★★★★</div></div>
-      <div class="review"><h4>🇮🇹 Marco - Italy</h4><p>"Raza built a professional restaurant website for us. Super clean and fast!"</p><div class="rating">★★★★★</div></div>
-      <div class="review"><h4>🇪🇸 Sofia - Spain</h4><p>"Top-tier developer! Delivered AI-integrated app ahead of schedule."</p><div class="rating">★★★★★</div></div>
-      <div class="review"><h4>🇳🇱 Lars - Netherlands</h4><p>"Great communication and expert in backend APIs. Will hire again!"</p><div class="rating">★★★★★</div></div>
-      <div class="review"><h4>🇸🇪 Elias - Sweden</h4><p>"Raza modernized our legacy app into an advanced AI-ready system. Brilliant!"</p><div class="rating">★★★★★</div></div>
-      <div class="review"><h4>🇧🇷 Ana - Brazil</h4><p>"Exceptional web design and smooth animations. I’m so impressed!"</p><div class="rating">★★★★★</div></div>
-      <div class="review"><h4>🇳🇿 Liam - New Zealand</h4><p>"Delivered my Android travel app before time. Beautiful UI/UX!"</p><div class="rating">★★★★★</div></div>
-      <div class="review"><h4>🇸🇬 Clara - Singapore</h4><p>"Outstanding AI chatbot integration in our website. Excellent experience!"</p><div class="rating">★★★★★</div></div>
-      <div class="review"><h4>🇨🇭 Noah - Switzerland</h4><p>"Raza’s website optimization improved our SEO ranking drastically!"</p><div class="rating">★★★★★</div></div>
-      <div class="review"><h4>🇦🇪 Aisha - UAE</h4><p>"AI business assistant app he made is revolutionary! Thank you so much."</p><div class="rating">★★★★★</div></div>
-      <div class="review"><h4>🇷🇺 Ivan - Russia</h4><p>"Fantastic developer! Understood requirements perfectly and executed flawlessly."</p><div class="rating">★★★★★</div></div>
-      <div class="review"><h4>🇰🇷 Jiwoo - South Korea</h4><p>"Love the smart Android app with AI-powered features. Highly skilled developer."</p><div class="rating">★★★★★</div></div>
-      <div class="review"><h4>🇿🇦 Ethan - South Africa</h4><p>"Web + AI combo project turned out phenomenal. Kudos to Raza!"</p><div class="rating">★★★★★</div></div>
     </div>
   </section>
 
@@ -153,7 +137,12 @@
   <script>
     const themeToggle = document.getElementById('themeToggle');
     const langToggle = document.getElementById('langToggle');
+    const visitorEl = document.getElementById('visitorNumber');
+    const hourHand = document.getElementById('hourHand');
+    const minHand = document.getElementById('minHand');
+    const secHand = document.getElementById('secHand');
 
+    // ✅ Language Toggle
     langToggle.addEventListener('click', () => {
       const isHinglish = langToggle.textContent.includes('Hinglish');
       langToggle.textContent = isHinglish ? '🌐 English' : '🌐 Hinglish';
@@ -162,6 +151,7 @@
       });
     });
 
+    // ✅ Theme Toggle
     themeToggle.addEventListener('click', () => {
       const body = document.body;
       const current = body.getAttribute('data-theme');
@@ -170,14 +160,12 @@
       themeToggle.textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
     });
 
-    const hourHand = document.getElementById('hourHand');
-    const minHand = document.getElementById('minHand');
-    const secHand = document.getElementById('secHand');
-
-    function setClockHands(date = new Date()){
-      const sec = date.getSeconds();
-      const min = date.getMinutes() + sec/60;
-      const hour = (date.getHours()%12) + min/60;
+    // ✅ Analog Clock Function
+    function setClockHands() {
+      const now = new Date();
+      const sec = now.getSeconds();
+      const min = now.getMinutes() + sec / 60;
+      const hour = (now.getHours() % 12) + min / 60;
       const secDeg = sec * 6;
       const minDeg = min * 6;
       const hourDeg = hour * 30;
@@ -186,30 +174,16 @@
       hourHand.style.transform = `translate(-50%,-100%) rotate(${hourDeg}deg)`;
     }
     setClockHands();
-    setInterval(() => setClockHands(new Date()), 1000);
+    setInterval(setClockHands, 1000);
 
-    const visitorEl = document.getElementById('visitorNumber');
-    let displayedVisitors = parseInt(visitorEl.textContent,10) || 272;
-    let targetVisitors = displayedVisitors;
-    let ticking = false;
-
-    function nextTarget(current){
-      const min = 50, max = 1500;
-      let raw = Math.floor(Math.random()*(max-min+1))+min;
-      const maxJump = Math.max(40, Math.round(current*0.25));
-      if(Math.abs(raw-current) > 200){
-        if(raw > current) raw = current + Math.floor(Math.random()*maxJump)+10;
-        else raw = current - (Math.floor(Math.random()*maxJump)+10);
-        if(raw < min) raw = min; if(raw > max) raw = max;
-      }
-      return raw;
+    // ✅ Live Visitor Counter
+    let currentVisitors = parseInt(visitorEl.textContent) || 272;
+    function updateVisitors() {
+      const change = Math.floor(Math.random() * 10) - 5;
+      currentVisitors = Math.max(50, currentVisitors + change);
+      visitorEl.textContent = currentVisitors;
     }
-
-    function animateToTarget(){
-      if(ticking) return;
-      ticking = true;
-      const start = displayedVisitors;
-      const end = targetVisitors;
-      const duration = 1800 + Math.random()*1200;
-      const startTime = performance.now();
-
+    setInterval(updateVisitors, 2000);
+  </script>
+</body>
+</html>
