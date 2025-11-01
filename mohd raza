@@ -1,4 +1,4 @@
-<index html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -6,7 +6,7 @@
   <title>Mohd Raza | Premium Portfolio</title>
   <meta name="description" content="Official portfolio of Mohd Raza – Web & Android Developer and AI Application Creator since 2016.">
 
-  <!-- Fonts (preconnect for faster load on GitHub Pages) -->
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -36,17 +36,7 @@
     .btn{background:var(--accent);border:none;color:#000;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:600;transition:opacity 0.3s}
     .btn:hover{opacity:0.85}
 
-    .clock-wrap{width:84px;height:84px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:var(--card);border:1px solid rgba(0,0,0,0.08)}
-    .visitor-wrap{min-width:170px;padding:10px 14px;border-radius:10px;background:var(--card);border:1px solid rgba(0,0,0,0.06);display:flex;flex-direction:column;align-items:flex-start;gap:6px}
-    .visitor-label{font-size:12px;color:var(--accent);font-weight:600}
-    .visitor-number{font-size:18px;font-weight:700}
-
-    .clock{position:relative;width:68px;height:68px;border-radius:50%;display:block;border:3px solid var(--accent);background:transparent}
-    .clock .center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:8px;height:8px;background:var(--accent);border-radius:50%;z-index:5}
-    .hand{position:absolute;left:50%;top:50%;transform-origin:50% 100%;transform:translate(-50%,-100%) rotate(0deg);transition:transform 0.5s cubic-bezier(.4,.2,.2,1)}
-    .hand.hour{width:4px;height:24px;background:var(--accent);border-radius:4px}
-    .hand.min{width:3px;height:30px;background:var(--accent);border-radius:4px}
-    .hand.sec{width:2px;height:34px;background:var(--accent);border-radius:2px}
+    .clock-digital{min-width:120px;padding:10px 14px;border-radius:10px;background:var(--card);border:1px solid rgba(0,0,0,0.06);text-align:center;font-size:18px;font-weight:700;color:var(--accent);}
 
     .hero{padding:64px 20px;text-align:center}
     .hero h2{font-size:2.4rem;color:var(--accent);margin:0 0 8px}
@@ -73,8 +63,7 @@
 
     @media (max-width:720px){
       header{padding:12px 16px}
-      .visitor-wrap{min-width:140px}
-      .clock-wrap{width:72px;height:72px}
+      .clock-digital{min-width:100px;font-size:16px}
     }
   </style>
 </head>
@@ -82,19 +71,7 @@
   <header>
     <h1>Mohd Raza</h1>
     <div class="header-right">
-      <div class="clock-wrap" aria-label="Live Clock">
-        <div class="clock" id="analogClock">
-          <div class="hand hour" id="hourHand"></div>
-          <div class="hand min" id="minHand"></div>
-          <div class="hand sec" id="secHand"></div>
-          <div class="center"></div>
-        </div>
-      </div>
-
-      <div class="visitor-wrap" aria-live="polite">
-        <div class="visitor-label">👁️‍🗨️ Live Visitors</div>
-        <div class="visitor-number" id="visitorNumber">272</div>
-      </div>
+      <div class="clock-digital" id="digitalClock">00:00:00</div>
 
       <div class="toggle-buttons">
         <button class="btn" id="langToggle">🌐 Hinglish</button>
@@ -143,16 +120,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       const themeToggle = document.getElementById('themeToggle');
       const langToggle = document.getElementById('langToggle');
-      const visitorEl = document.getElementById('visitorNumber');
-      const hourHand = document.getElementById('hourHand');
-      const minHand = document.getElementById('minHand');
-      const secHand = document.getElementById('secHand');
-
-      // --- CONFIG: CountAPI namespace & key (uses your GitHub username)
-      const COUNTAPI_NAMESPACE = 'urmohdraza-portfolio';
-      const COUNTAPI_KEY = 'visitors';
-      const HIT_URL = `https://api.countapi.xyz/hit/${COUNTAPI_NAMESPACE}/${COUNTAPI_KEY}`;
-      const GET_URL = `https://api.countapi.xyz/get/${COUNTAPI_NAMESPACE}/${COUNTAPI_KEY}`;
+      const clockEl = document.getElementById('digitalClock');
 
       // Language toggle (EN <-> HINGLISH)
       langToggle.addEventListener('click', () => {
@@ -170,43 +138,16 @@
         themeToggle.textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
       });
 
-      // Analog clock
-      function setClockHands(){
+      // Digital clock
+      function updateClock(){
         const now = new Date();
-        const sec = now.getSeconds();
-        const min = now.getMinutes() + sec/60;
-        const hour = (now.getHours()%12) + min/60;
-        secHand.style.transform = `translate(-50%,-100%) rotate(${sec*6}deg)`;
-        minHand.style.transform = `translate(-50%,-100%) rotate(${min*6}deg)`;
-        hourHand.style.transform = `translate(-50%,-100%) rotate(${hour*30}deg)`;
+        const h = String(now.getHours()).padStart(2,'0');
+        const m = String(now.getMinutes()).padStart(2,'0');
+        const s = String(now.getSeconds()).padStart(2,'0');
+        clockEl.textContent = `${h}:${m}:${s}`;
       }
-      setClockHands();
-      setInterval(setClockHands, 1000);
-
-      // Visitor counter: Hit once (increments) then poll GET periodically to show live number
-      function showCount(value){
-        visitorEl.textContent = Number(value).toLocaleString();
-      }
-
-      // Try to HIT (increment) on page load
-      fetch(HIT_URL)
-        .then(r => r.json())
-        .then(data => {
-          if(data && data.value !== undefined) showCount(data.value);
-        })
-        .catch(() => {
-          // fallback: try GET (maybe already exists) or keep default
-          fetch(GET_URL).then(r=>r.json()).then(d=>{ if(d && d.value !== undefined) showCount(d.value); }).catch(()=>{});
-        });
-
-      // Poll every 12 seconds to update displayed count without incrementing
-      setInterval(()=>{
-        fetch(GET_URL)
-          .then(r => r.json())
-          .then(data => { if(data && data.value !== undefined) showCount(data.value); })
-          .catch(()=>{});
-      }, 12000);
-
+      updateClock();
+      setInterval(updateClock,1000);
     });
   </script>
 </body>
