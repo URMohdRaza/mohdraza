@@ -5,7 +5,12 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Mohd Raza | Premium Portfolio</title>
   <meta name="description" content="Official portfolio of Mohd Raza – Web & Android Developer and AI Application Creator since 2016.">
+
+  <!-- Fonts (preconnect for faster load on GitHub Pages) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
   <style>
     :root{
       --dark-bg: linear-gradient(135deg,#000,#1a1a1a);
@@ -20,8 +25,8 @@
     [data-theme="dark"]{ --bg: var(--dark-bg); --accent: var(--gold); --text: var(--text-light); --card: var(--card-dark); }
     [data-theme="light"]{ --bg: var(--light-bg); --accent: var(--blue); --text: var(--text-dark); --card: var(--card-light); }
 
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);transition:background 0.5s, color 0.5s}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);transition:background 0.5s,color 0.5s}
 
     header{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;background:rgba(0,0,0,0.22);backdrop-filter:blur(8px);position:sticky;top:0;z-index:30;border-bottom:1px solid rgba(255,255,255,0.06)}
     h1{margin:0;color:var(--accent);font-weight:600}
@@ -111,11 +116,11 @@
   <section class="reviews">
     <h3>🌍 Global Client Reviews</h3>
     <div class="review-grid">
-      <div class="review"><h4>🇺🇸 John - USA</h4><p>"Raza developed an amazing AI chatbot for our business. Highly professional and efficient!"</p><div class="rating">★★★★★</div></div>
-      <div class="review"><h4>🇮🇳 Priya - India</h4><p>"Outstanding Android app! Smooth performance and beautiful UI. Highly recommend."</p><div class="rating">★★★★★</div></div>
-      <div class="review"><h4>🇬🇧 Oliver - London</h4><p>"The website Raza built for us is top-notch and fully responsive. Great attention to detail!"</p><div class="rating">★★★★★</div></div>
-      <div class="review"><h4>🇫🇷 Emma - France</h4><p>"Loved the AI-based recommendation system he created for my store. Very talented developer!"</p><div class="rating">★★★★★</div></div>
-      <div class="review"><h4>🇨🇦 Sophia - Canada</h4><p>"Delivered my eCommerce app on time with zero bugs. Excellent work ethics."</p><div class="rating">★★★★★</div></div>
+      <div class="review"><h4>🇺🇸 John - USA</h4><p>"Raza developed an amazing AI chatbot for our business. Highly professional and efficient!"</p></div>
+      <div class="review"><h4>🇮🇳 Priya - India</h4><p>"Outstanding Android app! Smooth performance and beautiful UI. Highly recommend."</p></div>
+      <div class="review"><h4>🇬🇧 Oliver - London</h4><p>"The website Raza built for us is top-notch and fully responsive. Great attention to detail!"</p></div>
+      <div class="review"><h4>🇫🇷 Emma - France</h4><p>"Loved the AI-based recommendation system he created for my store. Very talented developer!"</p></div>
+      <div class="review"><h4>🇨🇦 Sophia - Canada</h4><p>"Delivered my eCommerce app on time with zero bugs. Excellent work ethics."</p></div>
     </div>
   </section>
 
@@ -135,55 +140,74 @@
   </footer>
 
   <script>
-    const themeToggle = document.getElementById('themeToggle');
-    const langToggle = document.getElementById('langToggle');
-    const visitorEl = document.getElementById('visitorNumber');
-    const hourHand = document.getElementById('hourHand');
-    const minHand = document.getElementById('minHand');
-    const secHand = document.getElementById('secHand');
+    document.addEventListener('DOMContentLoaded', () => {
+      const themeToggle = document.getElementById('themeToggle');
+      const langToggle = document.getElementById('langToggle');
+      const visitorEl = document.getElementById('visitorNumber');
+      const hourHand = document.getElementById('hourHand');
+      const minHand = document.getElementById('minHand');
+      const secHand = document.getElementById('secHand');
 
-    // ✅ Language Toggle
-    langToggle.addEventListener('click', () => {
-      const isHinglish = langToggle.textContent.includes('Hinglish');
-      langToggle.textContent = isHinglish ? '🌐 English' : '🌐 Hinglish';
-      document.querySelectorAll('.lang').forEach(el => {
-        el.textContent = isHinglish ? el.dataset.hi : el.dataset.en;
+      // --- CONFIG: CountAPI namespace & key (uses your GitHub username)
+      const COUNTAPI_NAMESPACE = 'urmohdraza-portfolio';
+      const COUNTAPI_KEY = 'visitors';
+      const HIT_URL = `https://api.countapi.xyz/hit/${COUNTAPI_NAMESPACE}/${COUNTAPI_KEY}`;
+      const GET_URL = `https://api.countapi.xyz/get/${COUNTAPI_NAMESPACE}/${COUNTAPI_KEY}`;
+
+      // Language toggle (EN <-> HINGLISH)
+      langToggle.addEventListener('click', () => {
+        const toHinglish = langToggle.textContent.includes('Hinglish');
+        langToggle.textContent = toHinglish ? '🌐 English' : '🌐 Hinglish';
+        document.querySelectorAll('.lang').forEach(el => el.textContent = toHinglish ? el.dataset.hi : el.dataset.en);
       });
+
+      // Theme toggle (dark <-> light)
+      themeToggle.addEventListener('click', () => {
+        const body = document.body;
+        const current = body.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        body.setAttribute('data-theme', next);
+        themeToggle.textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
+      });
+
+      // Analog clock
+      function setClockHands(){
+        const now = new Date();
+        const sec = now.getSeconds();
+        const min = now.getMinutes() + sec/60;
+        const hour = (now.getHours()%12) + min/60;
+        secHand.style.transform = `translate(-50%,-100%) rotate(${sec*6}deg)`;
+        minHand.style.transform = `translate(-50%,-100%) rotate(${min*6}deg)`;
+        hourHand.style.transform = `translate(-50%,-100%) rotate(${hour*30}deg)`;
+      }
+      setClockHands();
+      setInterval(setClockHands, 1000);
+
+      // Visitor counter: Hit once (increments) then poll GET periodically to show live number
+      function showCount(value){
+        visitorEl.textContent = Number(value).toLocaleString();
+      }
+
+      // Try to HIT (increment) on page load
+      fetch(HIT_URL)
+        .then(r => r.json())
+        .then(data => {
+          if(data && data.value !== undefined) showCount(data.value);
+        })
+        .catch(() => {
+          // fallback: try GET (maybe already exists) or keep default
+          fetch(GET_URL).then(r=>r.json()).then(d=>{ if(d && d.value !== undefined) showCount(d.value); }).catch(()=>{});
+        });
+
+      // Poll every 12 seconds to update displayed count without incrementing
+      setInterval(()=>{
+        fetch(GET_URL)
+          .then(r => r.json())
+          .then(data => { if(data && data.value !== undefined) showCount(data.value); })
+          .catch(()=>{});
+      }, 12000);
+
     });
-
-    // ✅ Theme Toggle
-    themeToggle.addEventListener('click', () => {
-      const body = document.body;
-      const current = body.getAttribute('data-theme');
-      const next = current === 'dark' ? 'light' : 'dark';
-      body.setAttribute('data-theme', next);
-      themeToggle.textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
-    });
-
-    // ✅ Analog Clock Function
-    function setClockHands() {
-      const now = new Date();
-      const sec = now.getSeconds();
-      const min = now.getMinutes() + sec / 60;
-      const hour = (now.getHours() % 12) + min / 60;
-      const secDeg = sec * 6;
-      const minDeg = min * 6;
-      const hourDeg = hour * 30;
-      secHand.style.transform = `translate(-50%,-100%) rotate(${secDeg}deg)`;
-      minHand.style.transform = `translate(-50%,-100%) rotate(${minDeg}deg)`;
-      hourHand.style.transform = `translate(-50%,-100%) rotate(${hourDeg}deg)`;
-    }
-    setClockHands();
-    setInterval(setClockHands, 1000);
-
-    // ✅ Live Visitor Counter
-    let currentVisitors = parseInt(visitorEl.textContent) || 272;
-    function updateVisitors() {
-      const change = Math.floor(Math.random() * 10) - 5;
-      currentVisitors = Math.max(50, currentVisitors + change);
-      visitorEl.textContent = currentVisitors;
-    }
-    setInterval(updateVisitors, 2000);
   </script>
 </body>
 </html>
